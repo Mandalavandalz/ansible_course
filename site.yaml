@@ -17,6 +17,27 @@
       update_cache: yes
     when: ansible_distribution == "Ubuntu"
 
+  - name: create user
+    tags: always
+    user:
+      name: boyan.bonev
+      groups: root
+
+  - name: add sudors for boyan.bonev
+    tags: always
+    copy:
+      src: sudors_boyan_bonev
+      dest: /etc/sudoers.d/boyan-bonev
+      owner: root
+      group: root
+      mode: 0440
+
+  - name: add ssh key for boyan.bonev
+    tags: awlays
+    authorized_key:
+      user: boyan.bonev
+      key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCjhLb9FmxKm8riihnD0Ogjhg5J+yeZWhtt/eoUWRSPfwF8WdmH5NGNJ1IpJARVukN8V/vbfMQyWGu9GTsHjp6Dp2A4ND+TKvLiw3dDgac750N3Q2C4KIKca+qP73e5eKr6nJrlZCyhEwb6nlt/qDtLYRI0CSQxlWqB3vO0JzzVlOjm8OPiN7ySg84WWmg9ErZI+ZFvUgHdN6Ckx674S3psIbMu7cP2i9oUvYK852fLJ/ahFjpRbccAI4Yl1FySi83JmjGQC9H9CzuJeO7ieGtQsp7+gNyminrYXB65dJpyHT+uYwf7RzyeDCSOqA2bGdJ7KCvnRL6EJ+2nYJwz7aHv6KMmGhE63vulFD9vQVlBV9GZvCfiu8utrjRWmhkzkhR2B1AK2b+rZBw7hO0ppo1jaEw2hE55Ba/s2jhM6OT1rqvP5qSEgyxTmfiuZMSY2SEqAUdJ6lGP4Uq06w8ri6nbXZmowGaE2CFhCZ+10cKIrBRYdf0hmrrIlLz7n6k0soM= boyan@ansible-ws"
+
 - hosts: web_servers
   become: true
   tasks:
