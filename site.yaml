@@ -23,86 +23,17 @@
       name: boyan.bonev
       groups: root
 
-  - name: add sudors for boyan.bonev
-    tags: always
-    copy:
-      src: sudors_boyan_bonev
-      dest: /etc/sudoers.d/boyan-bonev
-      owner: root
-      group: root
-      mode: 0440
-
-  - name: add ssh key for boyan.bonev
-    tags: awlays
-    authorized_key:
-      user: boyan.bonev
-      key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCjhLb9FmxKm8riihnD0Ogjhg5J+yeZWhtt/eoUWRSPfwF8WdmH5NGNJ1IpJARVukN8V/vbfMQyWGu9GTsHjp6Dp2A4ND+TKvLiw3dDgac750N3Q2C4KIKca+qP73e5eKr6nJrlZCyhEwb6nlt/qDtLYRI0CSQxlWqB3vO0JzzVlOjm8OPiN7ySg84WWmg9ErZI+ZFvUgHdN6Ckx674S3psIbMu7cP2i9oUvYK852fLJ/ahFjpRbccAI4Yl1FySi83JmjGQC9H9CzuJeO7ieGtQsp7+gNyminrYXB65dJpyHT+uYwf7RzyeDCSOqA2bGdJ7KCvnRL6EJ+2nYJwz7aHv6KMmGhE63vulFD9vQVlBV9GZvCfiu8utrjRWmhkzkhR2B1AK2b+rZBw7hO0ppo1jaEw2hE55Ba/s2jhM6OT1rqvP5qSEgyxTmfiuZMSY2SEqAUdJ6lGP4Uq06w8ri6nbXZmowGaE2CFhCZ+10cKIrBRYdf0hmrrIlLz7n6k0soM= boyan@ansible-ws"
+- hosts: all
+  become: true
+  roles:
+    - base
 
 - hosts: web_servers
   become: true
-  tasks:
-
-  - name: install apache on web servers (ubuntu)
-    tags: apache,ubuntu
-    ansible.builtin.apt:
-      name:
-      - apache2
-      - libapache2-mod-php
-    when: ansible_distribution == "Ubuntu"
-
-  - name: install apache on web servers (fedora)
-    tags: apache,fedora
-    dnf:
-      name: httpd
-    when: ansible_distribution == "Fedora"
-
-  - name: ensure apache is running (ubuntu)
-    tags: apache,ubuntu
-    service:
-      name: apache2
-      state: started
-    when: ansible_distribution == "Ubuntu"
-
-  - name: ensure apache is running (fedora)
-    tags: apache,fedora
-    service:
-      name: httpd
-      state: started
-    when: ansible_distribution == "Fedora"
-
-  - name: change email address for admin
-    tags: apache,fedora
-    lineinfile:
-      path: /etc/httpd/conf/httpd.conf
-      regexp: '^ServerAdmin'
-      line: ServerAdmin boyan.bonev@me.com
-    when: ansible_distribution == "Fedora"
-    register: httpd
-
-  - name: restart httpd (fedora)
-    tags: apache,fedora
-    service:
-      name: httpd
-      state: restarted
-    when: httpd.changed
-
-  - name: copy html file for site
-    tags: apache,ubuntu
-    ansible.builtin.copy:
-      src: default_site.html
-      dest: /var/www/html/index.html
-      owner: root
-      group: root
-      mode: 0644
+  roles:
+    - web_servers
 
 - hosts: db_servers
   become: true
-  tasks:
-
-  - name: install mariadb package on db servers
-    tags: db,fedora
-    ansible.builtin.dnf:
-      name:
-      - mariadb
-      state: latest
-    when: ansible_distribution == "Fedora"
+  roles:
+    - db_servers
